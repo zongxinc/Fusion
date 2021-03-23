@@ -147,7 +147,7 @@ while 1:
 		left = left + camIndex
 		right = np.searchsorted(cam_ts[camIndex:], RP_ts[i], side='right')
 		right = right + camIndex
-		if (right - left) > (7 * 16):
+		if (right - left) > (16):
 			window = cam_count[left:right]
 			med = np.median(window)
 			cam_count[left:right] = med
@@ -169,6 +169,7 @@ while 1:
 
 	# report
 	if report:
+		print("writing to result")
 		result = {}
 		result['info'] = []
 		# print(cam_count)
