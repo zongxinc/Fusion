@@ -10,7 +10,7 @@ with open("result.json", "r") as f:
 
 fusion_ts = []
 fusion_count = []
-dt1 = datetime.datetime.fromtimestamp(1615468878.35857)
+dt1 = datetime.datetime.fromtimestamp(1616607997.2122753)
 for data in res["info"]:
 	for ts in data.keys():
 		dt2 = datetime.datetime.fromtimestamp(float(ts))
@@ -18,8 +18,8 @@ for data in res["info"]:
 		sec = diff.hours * 3600 + diff.minutes * 60 + diff.seconds
 		fusion_ts.append(sec)
 		fusion_count.append(float(data[ts]))
-# plt.plot(fusion_ts, fusion_count)
-# plt.savefig("fusion_count.png")
+plt.plot(fusion_ts, fusion_count)
+plt.savefig("fusion_count.png")
 
 files = sorted(os.listdir('/home/team19/Desktop/Axis_DL/Detection/YOLO/zongxin_test/Camera 1/'))
 
@@ -136,7 +136,7 @@ plt.figure()
 plt.plot(NUC_ts, NUC_count, "b", label="NUC")
 plt.plot(fusion_ts, fusion_count, "r", label="Fusion")
 plt.xlim([0, 10000])
-plt.ylim(-4, 11)
+plt.ylim(-10, 35)
 plt.title("Fusion and NUC")
 plt.xlabel("Time (seconds)")
 plt.ylabel("Number of people")
@@ -147,7 +147,7 @@ plt.figure()
 plt.plot(fusion_ts, fusion_count, "b", label="Fusion")
 plt.plot(RP_ts_g, RP_count_g, 'r', label="RP toal")
 plt.xlim([0, 10000])
-plt.ylim([-4, 11])
+plt.ylim([-10, 35])
 plt.title("Fusion and RP total")
 plt.xlabel("Time (seconds)")
 plt.ylabel("Number of people")
@@ -168,7 +168,7 @@ plt.figure()
 plt.plot(RP1_ts_g, RP1_count_g, "b", label="RP1")
 plt.plot(RP2_ts_g, RP2_count_g, "r", label="RP2")
 plt.xlim([0, 10000])
-plt.ylim([-4, 11])
+plt.ylim([-10, 30])
 plt.title("RP1 and RP2")
 plt.xlabel("Time (seconds)")
 plt.ylabel("Number of people")
