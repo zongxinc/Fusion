@@ -3,7 +3,8 @@
 NUC="python3 axis_cameras_v2.py"
 RP="python3 rpi-realtime-peoplecount/run.py"
 Fusion="python3 modified_filter.py"
-while getopts "N:CSO:Imsf:" opt;
+now=$(date +"%m-%d-%Y-%T")
+while getopts "N:CSOImsf" opt;
 do
     case "${opt}" in
             N) Fusion="${Fusion} -N ${OPTARG}"
@@ -12,7 +13,7 @@ do
                     ;;
             S) NUC="${NUC} -s"
                     ;;
-            O) NUC="${NUC} -o ${OPTARG}"
+            O) NUC="${NUC} -o ${now}"
                     ;;
             I) NUC="${NUC} -i"
                     ;;
@@ -20,10 +21,9 @@ do
                     ;;
             s) RP="${RP} -s"
                     ;;
-            f) RP="${RP} -f ${OPTARG}"
+            f) RP="${RP} -f ${now}"
     esac
 done
-
 echo "${NUC}"
 echo "${RP}"
 echo "${Fusion}"

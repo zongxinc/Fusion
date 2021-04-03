@@ -15,16 +15,35 @@ RPIndex = 0 # the index of last visited element in RP_ts and RP_count
 camIndex = 0 # the index of last processed element in cam_ts and cam_count
 start = 0 # the index of RP last time used as right
 RPfoldername = ["RP1", "RP2"]
-Camerafoldername = ['/home/team19/Desktop/Axis_DL/Detection/YOLO/zongxin_test/Camera 1/']
+Camerafoldername = []#'/home/team19/Desktop/Axis_DL/Detection/YOLO/zongxin_test/Camera 1/'
 camLast = 0 # the idex of the file in the folders that was last used
 count = np.zeros(len(RPfoldername))
 cam_ts = [] # array that stores all the timestamp from camera
 cam_count = np.array([]) # array that stores all the count from camera
-cam_intermediate_count = np.zeros(len(Camerafoldername)) # array stores count of individual cameras
+
 camdict = [] # array of dictionaries stores timestamp and count for each cameras
 camEnd = 0 # stores the min num of file in current camera folders
 reportTime = 10 # the time when there is not new file form RP, do a median
 report = False # bool for report
+
+#getting the folder name of the latest trial
+camerafolders = os.listdir('/home/team19/Desktop/Axis_DL/Detection/YOLO/')
+datafolder = []
+for f in camerafolders:
+	if ':' in f:
+		datafolder.append(f)
+folderdict = {}
+for i, f in enumerate(datafolder):
+	print(f)
+	datafolder[i] = f[6:10] + f[0:2] + f[3:5] + f[11:13] + f[14:16] + f[17:19]
+	folderdict[datafolder[i]] = f
+datafolder = sorted(datafolder, reverse=True)
+print(datafolder)
+Camerafoldername.append("/home/team19/Desktop/Axis_DL/Detection/YOLO/" + folderdict[datafolder[0]] + "/Camera 1/")
+print(Camerafoldername)
+
+cam_intermediate_count = np.zeros(len(Camerafoldername)) # array stores count of individual cameras
+
 
 # get input from commandline
 try:
