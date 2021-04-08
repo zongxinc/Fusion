@@ -10,7 +10,7 @@ with open("result.json", "r") as f:
 
 fusion_ts = []
 fusion_count = []
-dt1 = datetime.datetime.fromtimestamp(1617106840.5886662)
+dt1 = datetime.datetime.fromtimestamp(1617883723.7059696)
 for data in res["info"]:
 	for ts in data.keys():
 		dt2 = datetime.datetime.fromtimestamp(float(ts))
@@ -21,7 +21,7 @@ for data in res["info"]:
 # plt.plot(fusion_ts, fusion_count)
 # plt.savefig("fusion_count.png")
 
-files = sorted(os.listdir('/home/team19/Desktop/Axis_DL/Detection/YOLO/zongxin_test/Camera 1/'))
+files = sorted(os.listdir('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-08-2021-08:08:41/Camera 1/'))
 
 jsonList = []
 NUC_ts = []
@@ -38,7 +38,7 @@ for j in range(0, camEnd):
 	sec = diff.hours * 3600 + diff.minutes * 60 + diff.seconds
 	NUC_ts.append(sec)
 	# print("append", float(jsonList[j][0:len(jsonList[j])-5]))
-	with open('/home/team19/Desktop/Axis_DL/Detection/YOLO/zongxin_test/Camera 1/' + jsonList[j]) as f:
+	with open('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-08-2021-08:08:41/Camera 1/' + jsonList[j]) as f:
 		temp = json.load(f)
 		NUC_count.append(temp[1][temp[1].find(':') + 1 : len(temp[1])])
 
@@ -132,24 +132,31 @@ for i in range(len(RP2_ts)):
 	RP2_ts_g.append(RP2_ts[i])
 	RP2_count_g.append(RP2_count[i])
 
+print(NUC_count)
+# print(fusion_count)
+# plt.figure()
+# plt.plot(NUC_ts, NUC_count, "b", label="NUC")
+# plt.savefig("Fusion_NUC.png")
+
 plt.figure()
-plt.plot(NUC_ts, NUC_count, "b", label="NUC")
-plt.plot(fusion_ts, fusion_count, "r", label="Fusion")
-plt.xlim([0, 10000])
-plt.ylim([-20, 27])
+plt.plot([t/60 for t in NUC_ts], NUC_count, "b", label="NUC")
+plt.plot([t/60 for t in fusion_ts], fusion_count, "r", label="Fusion")
+plt.xlim([0, 30000/60])
+plt.ylim([-10, 10])
 plt.title("Fusion and NUC")
-plt.xlabel("Time (seconds)")
+plt.xlabel("Time (minutes)")
 plt.ylabel("Number of people")
 plt.legend()
 plt.savefig("Fusion_NUC_count.png")
 
+
 plt.figure()
-plt.plot(fusion_ts, fusion_count, "b", label="Fusion")
-plt.plot(RP_ts_g, RP_count_g, 'r', label="RP toal")
-plt.xlim([0, 10000])
-plt.ylim([-20, 27])
+plt.plot([t/60 for t in fusion_ts], fusion_count, "b", label="Fusion")
+plt.plot([t/60 for t in RP_ts_g], RP_count_g, 'r', label="RP toal")
+plt.xlim([0, 30000/60])
+plt.ylim([-10, 10])
 plt.title("Fusion and RP total")
-plt.xlabel("Time (seconds)")
+plt.xlabel("Time (minutes)")
 plt.ylabel("Number of people")
 plt.legend()
 plt.savefig("Fusion_RP_count.png")
@@ -165,12 +172,12 @@ plt.savefig("Fusion_RP_count.png")
 # plt.savefig("RP_count.png")
 
 plt.figure()
-plt.plot(RP1_ts_g, RP1_count_g, "b", label="RP1")
-plt.plot(RP2_ts_g, RP2_count_g, "r", label="RP2")
-plt.xlim([0, 10000])
-plt.ylim([-20, 27])
+plt.plot([t/60 for t in RP1_ts_g], RP1_count_g, "b", label="RP1")
+plt.plot([t/60 for t in RP2_ts_g], RP2_count_g, "r", label="RP2")
+plt.xlim([0, 30000/60])
+plt.ylim([-10, 10])
 plt.title("RP1 and RP2")
-plt.xlabel("Time (seconds)")
+plt.xlabel("Time (minutes)")
 plt.ylabel("Number of people")
 plt.legend()
 plt.savefig("RP1_RP2_count.png")

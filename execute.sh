@@ -13,7 +13,7 @@ do
                     ;;
             S) NUC="${NUC} -s"
                     ;;
-            O) NUC="${NUC} -o ${now}"
+            O) NUC="${NUC} -o ${now}/"
                     ;;
             I) NUC="${NUC} -i"
                     ;;
@@ -21,7 +21,7 @@ do
                     ;;
             s) RP="${RP} -s"
                     ;;
-            f) RP="${RP} -f ${now}"
+            f) RP="${RP} -f ${now}/"
     esac
 done
 echo "${NUC}"
@@ -31,6 +31,12 @@ cd
 cd Desktop
 . /home/team19/Desktop/ENV/bin/activate
 cd Axis_DL/Detection/YOLO
+mkdir "${now}"
+cd "${now}"
+mkdir "Camera 1"
+mkdir "Camera 2"
+mkdir "Camera 3"
+cd ..
 ls
 eval "${NUC}" >running_stdout.txt&
 cd 

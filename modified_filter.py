@@ -39,7 +39,7 @@ for i, f in enumerate(datafolder):
 	folderdict[datafolder[i]] = f
 datafolder = sorted(datafolder, reverse=True)
 print(datafolder)
-Camerafoldername.append("/home/team19/Desktop/Axis_DL/Detection/YOLO/" + folderdict[datafolder[0]] + "/Camera 1/")
+Camerafoldername.append("/home/team19/Desktop/Axis_DL/Detection/YOLO/" + folderdict[datafolder[0]] +"/Camera 1/")
 print(Camerafoldername)
 
 cam_intermediate_count = np.zeros(len(Camerafoldername)) # array stores count of individual cameras
