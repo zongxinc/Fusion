@@ -39,8 +39,8 @@ for i, f in enumerate(datafolder):
 	folderdict[datafolder[i]] = f
 datafolder = sorted(datafolder, reverse=True)
 print(datafolder)
-Camerafoldername.append("/home/team19/Desktop/Axis_DL/Detection/YOLO/" + folderdict[datafolder[0]] +"/Camera 2/")
-Camerafoldername.append("/home/team19/Desktop/Axis_DL/Detection/YOLO/" + folderdict[datafolder[0]] +"/Camera 3/")
+Camerafoldername.append("/home/team19/Desktop/Axis_DL/Detection/YOLO/" + folderdict[datafolder[0]] +"/Camera 1/")
+# Camerafoldername.append("/home/team19/Desktop/Axis_DL/Detection/YOLO/" + folderdict[datafolder[0]] +"/Camera 3/")
 print(Camerafoldername)
 
 cam_intermediate_count = np.zeros(len(Camerafoldername)) # array stores count of individual cameras
@@ -75,9 +75,7 @@ while 1:
 	time.sleep(1)
 	#iterate through the newest camera result, create dictionary for each timestamp, and append the new timestamp to the cam_ts
 	ts_temp = []
-
 	
-
 	for i in range(len(Camerafoldername)):
 		files = sorted(os.listdir(Camerafoldername[i]))
 		jsonList = []

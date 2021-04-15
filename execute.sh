@@ -1,8 +1,8 @@
 #!/bin/bash
 
-NUC="python3 axis_cameras_v2.py"
+NUC="python3 axis_cameras_single_cam.py"
 RP="python3 rpi-realtime-peoplecount/run.py"
-Fusion="python3 modified_filter.py"
+Fusion="python3 modified_filter_twoCameras.py"
 now=$(date +"%m-%d-%Y-%T")
 while getopts "N:CSOImsf" opt;
 do
@@ -41,7 +41,7 @@ ls
 eval "${NUC}" >running_stdout.txt&
 cd 
 cd Fusion
-ssh pi@10.241.10.18 "${RP}"&
-ssh pi@10.241.10.17 "${RP}"&
+ssh pi@10.241.10.31 "${RP}"&
+ssh pi@10.241.10.32 "${RP}"&
 python3 RP_sync.py >autoSync.txt&
-python3 modified_filter.py>filter.txt&
+eval "${Fusion}">filter.txt&

@@ -10,7 +10,7 @@ with open("result.json", "r") as f:
 
 fusion_ts = []
 fusion_count = []
-dt1 = datetime.datetime.fromtimestamp(1617883723.7059696)
+dt1 = datetime.datetime.fromtimestamp(1618240928.965784)
 for data in res["info"]:
 	for ts in data.keys():
 		dt2 = datetime.datetime.fromtimestamp(float(ts))
@@ -20,8 +20,9 @@ for data in res["info"]:
 		fusion_count.append(float(data[ts]))
 # plt.plot(fusion_ts, fusion_count)
 # plt.savefig("fusion_count.png")
-
-files = sorted(os.listdir('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-08-2021-08:08:41/Camera 1/'))
+Camera_2 = []
+Camera_3 = []
+files = sorted(os.listdir('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-12-2021-11:22:06/Camera 2/'))
 
 jsonList = []
 NUC_ts = []
@@ -38,9 +39,16 @@ for j in range(0, camEnd):
 	sec = diff.hours * 3600 + diff.minutes * 60 + diff.seconds
 	NUC_ts.append(sec)
 	# print("append", float(jsonList[j][0:len(jsonList[j])-5]))
-	with open('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-08-2021-08:08:41/Camera 1/' + jsonList[j]) as f:
+	total = 0
+	with open('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-12-2021-11:22:06/Camera 1/' + jsonList[j]) as f:
 		temp = json.load(f)
-		NUC_count.append(temp[1][temp[1].find(':') + 1 : len(temp[1])])
+		total += float(temp[1][temp[1].find(':') + 1 : len(temp[1])])
+		Camera_2.append(float(temp[1][temp[1].find(':') + 1 : len(temp[1])]))
+	with open('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-12-2021-11:22:06/Camera 2/' + jsonList[j]) as f:
+		temp = json.load(f)
+		total += float(temp[1][temp[1].find(':') + 1 : len(temp[1])])
+		Camera_3.append(float(temp[1][temp[1].find(':') + 1 : len(temp[1])]))
+	NUC_count.append(total/2)
 
 
 RPfoldername = ["RP1", "RP2"]
@@ -149,7 +157,7 @@ with open('test.npy', 'wb') as f:
 plt.figure()
 plt.plot([t/60 for t in NUC_ts], [float(count) for count in NUC_count], "b", label="NUC")
 plt.plot([t/60 for t in fusion_ts], [float(count) for count in fusion_count], "r", label="Fusion")
-plt.xlim([0, 40000/60])
+plt.xlim([0, 30000/60])
 plt.yticks(np.arange(-10, 10, 1.0))
 plt.title("Fusion and NUC")
 plt.xlabel("Time (minutes)")
@@ -161,7 +169,7 @@ plt.savefig("Fusion_NUC_count.png")
 plt.figure()
 plt.plot([t/60 for t in fusion_ts], [float(count) for count in fusion_count], "b", label="Fusion")
 plt.plot([t/60 for t in RP_ts_g], [float(count) for count in RP_count_g], 'r', label="RP toal")
-plt.xlim([0, 40000/60])
+plt.xlim([0, 30000/60])
 plt.ylim([-10, 10])
 plt.title("Fusion and RP total")
 plt.xlabel("Time (minutes)")
@@ -182,7 +190,7 @@ plt.savefig("Fusion_RP_count.png")
 plt.figure()
 plt.plot([t/60 for t in RP1_ts_g], [float(count) for count in RP1_count_g], "b", label="RP1")
 plt.plot([t/60 for t in RP2_ts_g], [float(count) for count in RP2_count_g], "r", label="RP2")
-plt.xlim([0, 40000/60])
+plt.xlim([0, 30000/60])
 plt.ylim([-10, 10])
 plt.title("RP1 and RP2")
 plt.xlabel("Time (minutes)")
@@ -194,6 +202,49 @@ plt.savefig("RP1_RP2_count.png")
 # plt.figure()
 # plt.plot(RP2_ts_g, RP2_count_g)
 # plt.savefig("RP2_count.png")
+
+files = sorted(os.listdir('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-12-2021-11:22:06/Camera 2/'))
+
+jsonList = []
+NUC_ts = []
+NUC_count = []
+for file in files:
+	if '.json' in file:
+		if not '._' in file:
+			jsonList.append(file)
+camEnd = len(jsonList)
+# print("file:", len(jsonList))
+for j in range(0, camEnd):
+	dt2 = datetime.datetime.fromtimestamp(float(jsonList[j][0:len(jsonList[j])-5]))
+	diff = dateutil.relativedelta.relativedelta(dt2, dt1)
+	sec = diff.hours * 3600 + diff.minutes * 60 + diff.seconds
+	NUC_ts.append(sec)
+	# print("append", float(jsonList[j][0:len(jsonList[j])-5]))
+	with open('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-12-2021-11:22:06/Camera 2/' + jsonList[j]) as f:
+		temp = json.load(f)
+		NUC_count.append(temp[1][temp[1].find(':') + 1 : len(temp[1])])
+
+plt.figure()
+plt.plot([t/60 for t in NUC_ts], Camera_2, "b", label="Camera 2")
+# plt.plot([t/60 for t in NUC_ts], Camera_3, "r", label="Camera 3")
+# plt.plot([t/60 for t in fusion_ts], [float(count) for count in fusion_count], "r", label="Fusion")
+plt.xlim([0, 30000/60])
+plt.yticks(np.arange(-10, 10, 1.0))
+# plt.title("Fusion and NUC")
+plt.xlabel("Time (minutes)")
+plt.ylabel("Number of people")
+plt.legend()
+plt.savefig("Camera2.png")
+
+plt.figure()
+plt.plot([t/60 for t in NUC_ts], Camera_3, "r", label="Camera 3")
+plt.xlim([0, 30000/60])
+plt.yticks(np.arange(-10, 10, 1.0))
+# plt.title("Fusion and NUC")
+plt.xlabel("Time (minutes)")
+plt.ylabel("Number of people")
+plt.legend()
+plt.savefig("Camera3.png")
 
 
 
