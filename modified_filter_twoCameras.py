@@ -153,54 +153,72 @@ while 1:
 		RP_count.append(sum(count))
 
 	#if now has passed the report time but no new file from thermal sensor
-
-	print((len(cam_ts) - camIndex) * 5)
-	if ((len(cam_ts) - camIndex) * 5 >= int(reportTime) * 60):
-		print(cam_ts[len(cam_ts)-1])
-		report = True
-		window = cam_count[camIndex:]
+	if (len(RP_ts) > RPIndex):
+		window = cam_count[-7:]
 		med = np.median(window)
-		cam_count[camIndex:] = med
+		res_count = med
+		res_ts = cam_ts[-1]
+		cam_Index = len(cam_ts) - 1
+		RPIndex = len(RP_ts)
+	elif (len(cam_ts) - camIndex < 7):
+		window = cam_count[-7:]
+		med = np.median(window)
+		res_count = med
+		res_ts = cam_ts[-1]
+		# cam_Index = len(cam_ts) - 1
+	elif (len(cam_ts) - camIndex < 25):
+		window = cam_count[cam_Index:]
+		med = np.median(window)
+		res_count = med
+		res_ts = cam_ts[-1]
+	else:
+		window = cam_count[-25:]
+		med = np.median(window)
+		res_count = med
+		res_ts = cam_ts[-1]
 
-	# filter
-	for i in range(RPIndex, len(RP_ts)):
-		report = True
-		left = np.searchsorted(cam_ts[camIndex:], RP_ts[start], side='left')
-		left = left + camIndex
-		right = np.searchsorted(cam_ts[camIndex:], RP_ts[i], side='right')
-		right = right + camIndex
-		if (right - left) > (16):
-			window = cam_count[left:right]
-			med = np.median(window)
-			cam_count[left:right] = med
-			start = i
-		else:
-			newArray = np.array([])
-			begin = left
-			while (left) < right:
-				a = max(left - 3, begin)
-				b = min(left + 3, right)
-				#print(left)
-				window = cam_count[a:b + 1]
-				med = np.median(window)
-				newArray = np.append(newArray, med)
-				left += 1
-			cam_count[begin:right] = newArray
-			start = i
-	RPIndex = len(RP_ts)
+	# print((len(cam_ts) - camIndex) * 5)
+	# if ((len(cam_ts) - camIndex) * 5 >= int(reportTime) * 60):
+	# 	print(cam_ts[len(cam_ts)-1])
+	# 	report = True
+	# 	window = cam_count[camIndex:]
+	# 	med = np.median(window)
+	# 	cam_count[camIndex:] = med
+
+	# # filter
+	# for i in range(RPIndex, len(RP_ts)):
+	# 	report = True
+	# 	left = np.searchsorted(cam_ts[camIndex:], RP_ts[start], side='left')
+	# 	left = left + camIndex
+	# 	right = np.searchsorted(cam_ts[camIndex:], RP_ts[i], side='right')
+	# 	right = right + camIndex
+	# 	if (right - left) > (16):
+	# 		window = cam_count[left:right]
+	# 		med = np.median(window)
+	# 		cam_count[left:right] = med
+	# 		start = i
+	# 	else:
+	# 		newArray = np.array([])
+	# 		begin = left
+	# 		while (left) < right:
+	# 			a = max(left - 3, begin)
+	# 			b = min(left + 3, right)
+	# 			#print(left)
+	# 			window = cam_count[a:b + 1]
+	# 			med = np.median(window)
+	# 			newArray = np.append(newArray, med)
+	# 			left += 1
+	# 		cam_count[begin:right] = newArray
+	# 		start = i
+	# RPIndex = len(RP_ts)
 
 	# report
-	if report:
-		print("writing to result")
-		result = {}
-		result['info'] = []
-		# print(cam_count)
-		for i in range(len(cam_ts)):
-			result['info'].append({str(cam_ts[i]): str(cam_count[i])})
-		with open('result.json', 'w') as outfile:
-			json.dump(result, outfile)
-		report = False
-		camIndex = len(cam_ts)
+	print("writing to result")
+	result = {}
+	result[str(res_ts)] = [str(res_count)]
+	# print(cam_count)
+	with open('result/' + str(res_ts) + '.json', 'w') as outfile:
+		json.dump(result, outfile)
 
 
 

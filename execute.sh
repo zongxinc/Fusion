@@ -1,10 +1,10 @@
 #!/bin/bash
 
-NUC="python3 axis_cameras_single_cam.py"
+NUC="python3 axis_cameras_single_cam_v2_copy.py"
 RP="python3 rpi-realtime-peoplecount/run.py"
 Fusion="python3 modified_filter_twoCameras.py"
 now=$(date +"%m-%d-%Y-%T")
-while getopts "N:CSOImsf" opt;
+while getopts "N:CSOA:B:Imsf" opt;
 do
     case "${opt}" in
             N) Fusion="${Fusion} -N ${OPTARG}"
@@ -16,6 +16,10 @@ do
             O) NUC="${NUC} -o ${now}/"
                     ;;
             I) NUC="${NUC} -i"
+                    ;;
+            A) NUC="${NUC} -a ${OPTARG}"
+                    ;;
+            B) NUC="${NUC} -b ${OPTARG}"
                     ;;
             m) RP="${RP} -m"
                     ;;
