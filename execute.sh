@@ -4,10 +4,12 @@ NUC="python3 axis_cameras_single_cam_v2_copy.py"
 RP="python3 rpi-realtime-peoplecount/run.py"
 Fusion="python3 modified_filter_twoCameras.py"
 now=$(date +"%m-%d-%Y-%T")
-while getopts "N:CSOA:B:Imsf" opt;
+while getopts "N:MCSOA:B:Imsf" opt;
 do
     case "${opt}" in
             N) Fusion="${Fusion} -N ${OPTARG}"
+                    ;;
+            M) Fusion="${Fusion} -M"
                     ;;
             C) NUC="${NUC} -c"
                     ;;
@@ -31,6 +33,8 @@ done
 echo "${NUC}"
 echo "${RP}"
 echo "${Fusion}"
+cd result
+rm *.json
 cd
 cd Desktop
 . /home/team19/Desktop/ENV/bin/activate

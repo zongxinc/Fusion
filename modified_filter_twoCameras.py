@@ -41,14 +41,14 @@ datafolder = sorted(datafolder, reverse=True)
 print(datafolder)
 Camerafoldername.append("/home/team19/Desktop/Axis_DL/Detection/YOLO/" + folderdict[datafolder[0]] +"/Camera 1/")
 # Camerafoldername.append("/home/team19/Desktop/Axis_DL/Detection/YOLO/" + folderdict[datafolder[0]] +"/Camera 3/")
-print(Camerafoldername)
+
 
 cam_intermediate_count = np.zeros(len(Camerafoldername)) # array stores count of individual cameras
 
 
 # get input from commandline
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "hN:", ["H="])
+	opts, args = getopt.getopt(sys.argv[1:], "hN:M", ["H="])
 except getopt.GetoptError:
 	print("Error: modified_filter.py -N <reportTime>")
 	sys.exit()
@@ -56,10 +56,13 @@ except getopt.GetoptError:
 for opt, arg in opts:
 	if opt == "-h":
 		print('modified_filter.py -N <reportTime>')
+		print("-M, for two cameras")
 		sys.exit()
 	elif opt in ("-N", "--infile"):
 		reportTime = arg
-
+	elif opt == "-M":
+		Camerafoldername.append("/home/team19/Desktop/Axis_DL/Detection/YOLO/" + folderdict[datafolder[0]] +"/Camera 2/")
+print(Camerafoldername)
 # initialize the dictionaries
 for i in range(len(Camerafoldername)):
 	camdict.append({})
@@ -90,7 +93,7 @@ while 1:
 			# print("append", float(jsonList[j][0:len(jsonList[j])-5]))
 			with open(Camerafoldername[i] + jsonList[j]) as f:
 				temp = json.load(f)
-				camdict[i][float(jsonList[j][0:len(jsonList[j])-5])] = temp[1][temp[1].find(':') + 1 : len(temp[1])]
+				camdict[i][float(jsonList[j][0:len(jsonList[j])-5])] = temp["Num People"]
 	print(len(ts_temp))
 	camLast = camEnd
 	ts_temp.sort()
@@ -105,7 +108,7 @@ while 1:
 				cam_intermediate_count[j] = camdict[j][ts_temp[i]]
 				print(cam_intermediate_count[j], ts_temp[i])
 		cam_count = np.append(cam_count, sum(cam_intermediate_count))
-	print("cam_count", cam_count)
+	print("cam_count", cam_count/len(Camerafoldername))
 	#go through all the RP folder and decide which one has the most file and create a matrix that store all the RP information.
 	for i in range(len(RPfoldername)):
 		myfiles = np.array(os.listdir(RPfoldername[i]))
@@ -153,29 +156,30 @@ while 1:
 		RP_count.append(sum(count))
 
 	#if now has passed the report time but no new file from thermal sensor
-	if (len(RP_ts) > RPIndex):
-		window = cam_count[-7:]
-		med = np.median(window)
-		res_count = med
-		res_ts = cam_ts[-1]
-		cam_Index = len(cam_ts) - 1
-		RPIndex = len(RP_ts)
-	elif (len(cam_ts) - camIndex < 7):
-		window = cam_count[-7:]
-		med = np.median(window)
-		res_count = med
-		res_ts = cam_ts[-1]
-		# cam_Index = len(cam_ts) - 1
-	elif (len(cam_ts) - camIndex < 25):
-		window = cam_count[cam_Index:]
-		med = np.median(window)
-		res_count = med
-		res_ts = cam_ts[-1]
-	else:
-		window = cam_count[-25:]
-		med = np.median(window)
-		res_count = med
-		res_ts = cam_ts[-1]
+	if len(cam_ts) > 0:
+		if (len(RP_ts) > RPIndex):
+			window = cam_count[-7:]
+			med = np.median(window)
+			res_count = med
+			res_ts = cam_ts[-1]
+			cam_Index = len(cam_ts) - 1
+			RPIndex = len(RP_ts)
+		elif (len(cam_ts) - camIndex < 7):
+			window = cam_count[-7:]
+			med = np.median(window)
+			res_count = med
+			res_ts = cam_ts[-1]
+			# cam_Index = len(cam_ts) - 1
+		elif (len(cam_ts) - camIndex < 25):
+			window = cam_count[camIndex:]
+			med = np.median(window)
+			res_count = med
+			res_ts = cam_ts[-1]
+		else:
+			window = cam_count[-25:]
+			med = np.median(window)
+			res_count = med
+			res_ts = cam_ts[-1]
 
 	# print((len(cam_ts) - camIndex) * 5)
 	# if ((len(cam_ts) - camIndex) * 5 >= int(reportTime) * 60):
@@ -213,12 +217,12 @@ while 1:
 	# RPIndex = len(RP_ts)
 
 	# report
-	print("writing to result")
-	result = {}
-	result[str(res_ts)] = [str(res_count)]
-	# print(cam_count)
-	with open('result/' + str(res_ts) + '.json', 'w') as outfile:
-		json.dump(result, outfile)
+		print("writing to result")
+		result = {}
+		result[str(res_ts)] = [str(res_count)]
+		# print(cam_count)
+		with open('result/' + str(res_ts) + '.json', 'w') as outfile:
+			json.dump(result, outfile)
 
 
 
