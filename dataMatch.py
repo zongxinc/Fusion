@@ -5,24 +5,39 @@ import numpy as np
 import datetime
 import dateutil.relativedelta
 
-with open("result.json", "r") as f:
-	res = json.load(f)
+files = sorted(os.listdir('/home/team19/Fusion/result/'))
+
+jsonList = []
+for file in files:
+	if '.json' in file:
+		if not '._' in file:
+			jsonList.append(file)
 
 fusion_ts = []
 fusion_count = []
-dt1 = datetime.datetime.fromtimestamp(1618487999.5325396)
-for data in res["info"]:
-	for ts in data.keys():
-		dt2 = datetime.datetime.fromtimestamp(float(ts))
-		diff = dateutil.relativedelta.relativedelta(dt2, dt1)
-		sec = diff.hours * 3600 + diff.minutes * 60 + diff.seconds
-		fusion_ts.append(sec)
-		fusion_count.append(float(data[ts]))
+dt1 = datetime.datetime.fromtimestamp(1619195309.272862)
+for i in range(len(jsonList)):
+	dt2 = datetime.datetime.fromtimestamp(float(jsonList[i][0:len(jsonList[i])-5]))
+	diff = dateutil.relativedelta.relativedelta(dt2, dt1)
+	sec = diff.hours * 3600 + diff.minutes * 60 + diff.seconds
+	fusion_ts.append(sec)
+	with open('/home/team19/Fusion/result/' + jsonList[i]) as f:
+		temp = json.load(f)
+		# print(type(temp[jsonList[i][0:len(jsonList[i])-5]]))
+		fusion_count.append(temp[jsonList[i][0:len(jsonList[i])-5]][0])
+# for data in res["info"]:
+# 	for ts in data.keys():
+# 		dt2 = datetime.datetime.fromtimestamp(float(ts))
+# 		diff = dateutil.relativedelta.relativedelta(dt2, dt1)
+# 		sec = diff.hours * 3600 + diff.minutes * 60 + diff.seconds
+# 		fusion_ts.append(sec)
+# 		fusion_count.append(float(data[ts]))
 # plt.plot(fusion_ts, fusion_count)
 # plt.savefig("fusion_count.png")
 Camera_2 = []
 Camera_3 = []
-files = sorted(os.listdir('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-15-2021-07:59:57/Camera 1/'))
+
+files = sorted(os.listdir('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-23-2021-12:28:27/Camera 1/'))
 
 jsonList = []
 NUC_ts = []
@@ -40,10 +55,10 @@ for j in range(0, camEnd):
 	NUC_ts.append(sec)
 	# print("append", float(jsonList[j][0:len(jsonList[j])-5]))
 	total = 0
-	with open('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-15-2021-07:59:57/Camera 1/' + jsonList[j]) as f:
+	with open('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-23-2021-12:28:27/Camera 1/' + jsonList[j]) as f:
 		temp = json.load(f)
-		total += float(temp[1][temp[1].find(':') + 1 : len(temp[1])])
-		Camera_2.append(float(temp[1][temp[1].find(':') + 1 : len(temp[1])]))
+		total += float(temp['Num People'])
+		# Camera_2.append(float(temp[1][temp[1].find(':') + 1 : len(temp[1])]))
 	# with open('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-12-2021-11:22:06/Camera 2/' + jsonList[j]) as f:
 	# 	temp = json.load(f)
 	# 	total += float(temp[1][temp[1].find(':') + 1 : len(temp[1])])
@@ -72,7 +87,10 @@ for i in range(len(RPfoldername)):
 				print(RPfoldername[i] + "/" + myfiles[j])
 				RP_ts.append(float(temp['timestamp']))
 				print(float(temp['timestamp']), int(temp['count']))
-				RP_dict[i][float(temp['timestamp'])] = int(temp['count'])
+				if i == 0:
+					RP_dict[i][float(temp['timestamp'])] = -int(temp['count'])
+				else:
+					RP_dict[i][float(temp['timestamp'])] = int(temp['count'])
 				if i == 0:
 					dt2 = datetime.datetime.fromtimestamp(float(temp['timestamp']))
 					diff = dateutil.relativedelta.relativedelta(dt2, dt1)
@@ -119,12 +137,12 @@ RP1_count_g.append(0)
 for i in range(len(RP1_ts)):
 	if i !=0:
 		RP1_ts_g.append(RP1_ts[i])
-		RP1_count_g.append(RP1_count[i-1])
+		RP1_count_g.append(-RP1_count[i-1])
 	else:
 		RP1_ts_g.append(RP1_ts[i])
 		RP1_count_g.append(0)
 	RP1_ts_g.append(RP1_ts[i])
-	RP1_count_g.append(RP1_count[i])
+	RP1_count_g.append(-RP1_count[i])
 
 RP2_ts_g = []
 RP2_count_g = []
@@ -157,7 +175,7 @@ with open('test.npy', 'wb') as f:
 plt.figure()
 plt.plot([t/60 for t in NUC_ts], [float(count) for count in NUC_count], "b", label="NUC")
 plt.plot([t/60 for t in fusion_ts], [float(count) for count in fusion_count], "r", label="Fusion")
-plt.xlim([0, 30000/60])
+plt.xlim([0, 50])
 plt.yticks(np.arange(-10, 10, 1.0))
 plt.title("Fusion and NUC")
 plt.xlabel("Time (minutes)")
@@ -169,7 +187,7 @@ plt.savefig("Fusion_NUC_count.png")
 plt.figure()
 plt.plot([t/60 for t in fusion_ts], [float(count) for count in fusion_count], "b", label="Fusion")
 plt.plot([t/60 for t in RP_ts_g], [float(count) for count in RP_count_g], 'r', label="RP toal")
-plt.xlim([0, 30000/60])
+plt.xlim([0, 50])
 plt.ylim([-10, 10])
 plt.title("Fusion and RP total")
 plt.xlabel("Time (minutes)")
@@ -190,7 +208,7 @@ plt.savefig("Fusion_RP_count.png")
 plt.figure()
 plt.plot([t/60 for t in RP1_ts_g], [float(count) for count in RP1_count_g], "b", label="RP1")
 plt.plot([t/60 for t in RP2_ts_g], [float(count) for count in RP2_count_g], "r", label="RP2")
-plt.xlim([0, 30000/60])
+plt.xlim([0, 50])
 plt.ylim([-10, 10])
 plt.title("RP1 and RP2")
 plt.xlabel("Time (minutes)")

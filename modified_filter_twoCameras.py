@@ -7,6 +7,8 @@ import time
 
 # Here are all the variables
 # RPLast = 0
+short_window = 7
+long_window = 25
 RP_ts = [] # store all the timestamps from the Raspberry Pis
 RP_count = [] # store all the count from the Raspberry Pis
 RPdict = [] # this is an array of dictionaries each element is a dictionary of timestamp and count for each RP devices
@@ -140,7 +142,7 @@ while 1:
 			if fileList[i][j] != 'placeHolder':
 				with open(RPfoldername[i - 1] + '/' + fileList[i][j], encoding='utf-8') as f:
 					temp = json.load(f)
-				os.system('ssh ' + room_information[0]["thermal address"][i - 1] + ' rm ./Buffer/' + fileList[i][j])
+				os.system('ssh ' + room_information[0]["thermal"][i - 1]['thermal_ip'] + ' rm ./Buffer/' + fileList[i][j])
 				ts_temp.append(float(temp['timestamp']))
 				RPdict[i - 1][float(temp['timestamp'])] = int(temp['count'])
 				#print(float(temp['timestamp']), int(temp['count']))
@@ -158,25 +160,25 @@ while 1:
 	#if now has passed the report time but no new file from thermal sensor
 	if len(cam_ts) > 0:
 		if (len(RP_ts) > RPIndex):
-			window = cam_count[-7:]
+			window = cam_count[-short_window:]
 			med = np.median(window)
 			res_count = med
 			res_ts = cam_ts[-1]
 			cam_Index = len(cam_ts) - 1
 			RPIndex = len(RP_ts)
-		elif (len(cam_ts) - camIndex < 7):
-			window = cam_count[-7:]
+		elif (len(cam_ts) - camIndex < short_window):
+			window = cam_count[-short_window:]
 			med = np.median(window)
 			res_count = med
 			res_ts = cam_ts[-1]
 			# cam_Index = len(cam_ts) - 1
-		elif (len(cam_ts) - camIndex < 25):
+		elif (len(cam_ts) - camIndex < long_window):
 			window = cam_count[camIndex:]
 			med = np.median(window)
 			res_count = med
 			res_ts = cam_ts[-1]
 		else:
-			window = cam_count[-25:]
+			window = cam_count[-long_window:]
 			med = np.median(window)
 			res_count = med
 			res_ts = cam_ts[-1]

@@ -1,12 +1,21 @@
 [
   {
     "room # ": 1,
-    "camera address": [
-      "team19@128.197.128.209"
+    "camera": [
+      {
+        "cam_id": "OFC-1",
+        "cam_ip": "10.241.10.15"
+      }
     ],
-    "thermal address": [
-      "pi@10.241.10.31",
-      "pi@10.241.10.32"
+    "thermal": [
+      {
+        "thermal_id": "TDS-1",
+        "thermal_ip": "pi@10.241.10.32"
+      },
+      {
+        "thermal_id": "TDS-2",
+        "thermal_ip": "pi@10.241.10.33"
+      }
     ]
   }
 ]
