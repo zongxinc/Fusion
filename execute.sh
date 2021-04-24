@@ -4,7 +4,8 @@ NUC="python3 axis_cameras_single_cam_v2_copy.py"
 RP="python3_rpi-realtime-peoplecount/run.py"
 Fusion="python3 modified_filter_twoCameras.py"
 now=$(date +"%m-%d-%Y-%T")
-while getopts "N:MCSOA:B:Imsf" opt;
+room=""
+while getopts "N:MCSOA:B:ImsfR:" opt;
 do
     case "${opt}" in
             N) Fusion="${Fusion} -N ${OPTARG}"
@@ -28,6 +29,9 @@ do
             s) RP="${RP}_-s"
                     ;;
             f) RP="${RP}_-f_${now}/"
+                    ;;
+            R) Fusion="${Fusion} -R ${OPTARG}"
+                room="${OPTARG}"
     esac
 done
 echo "${NUC}"
@@ -45,12 +49,14 @@ mkdir "Camera 1"
 mkdir "Camera 2"
 mkdir "Camera 3"
 cd ..
-ls
 eval "${NUC}" >running_stdout.txt&
 cd 
 cd Fusion
-eval "python3 executeRP.py -p ${RP}"&
+echo "hellp"
+eval "python3 executeRP.py -p ${RP} -R ${room}"&
 # ssh pi@10.241.10.17 "${RP}"&
 # ssh pi@10.241.10.32 "${RP}"&
+echo "helo"
 python3 RP_sync.py >autoSync.txt&
-eval "${Fusion}">filter.txt&
+echo "bello"
+eval "${Fusion} -R ${room}">filter.txt&

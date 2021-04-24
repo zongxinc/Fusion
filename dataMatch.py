@@ -129,6 +129,8 @@ for i in range(len(RP_ts)):
 		RP_count_g.append(0)
 	RP_ts_g.append(sec)
 	RP_count_g.append(RP_count[i])
+RP_ts_g.append(NUC_ts[-1])
+RP_count_g.append(RP_count[-1])
 
 RP1_ts_g = []
 RP1_count_g = []
@@ -143,6 +145,8 @@ for i in range(len(RP1_ts)):
 		RP1_count_g.append(0)
 	RP1_ts_g.append(RP1_ts[i])
 	RP1_count_g.append(-RP1_count[i])
+RP1_ts_g.append(NUC_ts[-1])
+RP1_count_g.append(-RP1_count[-1])
 
 RP2_ts_g = []
 RP2_count_g = []
@@ -157,6 +161,8 @@ for i in range(len(RP2_ts)):
 		RP2_count_g.append(0)
 	RP2_ts_g.append(RP2_ts[i])
 	RP2_count_g.append(RP2_count[i])
+RP2_ts_g.append(NUC_ts[-1])
+RP2_count_g.append(RP2_count[-1])
 
 print(NUC_count)
 # print(fusion_count)
@@ -173,96 +179,75 @@ with open('test.npy', 'wb') as f:
 	np.save(f, fusion_count)
 
 plt.figure()
-plt.plot([t/60 for t in NUC_ts], [float(count) for count in NUC_count], "b", label="NUC")
+plt.plot([t/60 for t in NUC_ts], [float(count) for count in NUC_count], "b", label="OFC")
 plt.plot([t/60 for t in fusion_ts], [float(count) for count in fusion_count], "r", label="Fusion")
-plt.xlim([0, 50])
-plt.yticks(np.arange(-10, 10, 1.0))
-plt.title("Fusion and NUC")
+# plt.xlim([0, 50])
+plt.yticks(np.arange(-5, 8, 1.0))
+plt.title("Fusion and OFC")
 plt.xlabel("Time (minutes)")
 plt.ylabel("Number of people")
 plt.legend()
-plt.savefig("Fusion_NUC_count.png")
+plt.savefig("Fusion_OFC_count.png")
 
 
 plt.figure()
-plt.plot([t/60 for t in fusion_ts], [float(count) for count in fusion_count], "b", label="Fusion")
-plt.plot([t/60 for t in RP_ts_g], [float(count) for count in RP_count_g], 'r', label="RP toal")
-plt.xlim([0, 50])
-plt.ylim([-10, 10])
-plt.title("Fusion and RP total")
-plt.xlabel("Time (minutes)")
-plt.ylabel("Number of people")
-plt.legend()
-plt.savefig("Fusion_RP_count.png")
-
-# plt.figure()
-# print(RP_count)
-# plt.plot(RP_ts_g, RP_count_g)
-# plt.xlim([0, 10000])
-# plt.ylim([-4, 11])
-# plt.title("RP total")
-# plt.xlabel("Time (seconds)")
-# plt.ylabel("Number of people")
-# plt.savefig("RP_count.png")
+fig,ax = plt.subplots()
+l1, = ax.plot([t/60 for t in fusion_ts], [float(count) for count in fusion_count], "r", label="Fusion")
+# plt.xlim([0, 50])
+# plt.ylim([-10, 10])
+ax.set_yticks(np.arange(-5, 8, 1.0), minor=False)
+ax.set_ylabel("Number of people(Fusion)", color="red")
+ax.set_xlabel("Time (minutes)")
+ax2 = ax.twinx()
+l2, = ax2.plot([t/60 for t in RP_ts_g], [float(count) for count in RP_count_g], 'g', label="TDS toal")
+# plt.xlim([0, 50])
+# plt.ylim([-10, 10])
+# print([float(count) for count in RP_count_g])
+plt.title("Fusion and TDS total")
+ax2.set_xlabel("Time (minutes)")
+ax2.set_yticks(np.arange(-2, 10, 1.0), minor=False)
+ax2.set_ylabel("Number of people(TDS total)", color='green')
+# ax.legend()
+# ax2.legend()
+plt.legend([l1, l2], ["Fusion", "TDS toal"])
+plt.savefig("Fusion_TDS_count.png")
 
 plt.figure()
-plt.plot([t/60 for t in RP1_ts_g], [float(count) for count in RP1_count_g], "b", label="RP1")
-plt.plot([t/60 for t in RP2_ts_g], [float(count) for count in RP2_count_g], "r", label="RP2")
-plt.xlim([0, 50])
-plt.ylim([-10, 10])
-plt.title("RP1 and RP2")
+fig,ax = plt.subplots()
+l1, = ax.plot([t/60 for t in NUC_ts], [float(count) for count in NUC_count], "b", label="OFC")
+# plt.xlim([0, 50])
+# plt.ylim([-10, 10])
+ax.set_yticks(np.arange(-5, 8, 1.0), minor=False)
+ax.set_ylabel("Number of people(OFC)", color="blue")
+ax.set_xlabel("Time (minutes)")
+ax2 = ax.twinx()
+l2, = ax2.plot([t/60 for t in RP_ts_g], [float(count) for count in RP_count_g], 'g', label="TDS toal")
+# plt.xlim([0, 50])
+# plt.ylim([-10, 10])
+# print([float(count) for count in RP_count_g])
+plt.title("OFC and TDS total")
+ax2.set_xlabel("Time (minutes)")
+ax2.set_yticks(np.arange(-2, 10, 1.0), minor=False)
+ax2.set_ylabel("Number of people(TDS total)", color='green')
+# ax.legend()
+# ax2.legend()
+plt.legend([l1, l2], ["OFC", "TDS toal"])
+plt.savefig("OFC_TDS_count.png")
+
+plt.figure()
+plt.plot([t/60 for t in RP2_ts_g], [float(count) for count in RP2_count_g], "r", label="TDS1 10.241.10.33")
+plt.plot([t/60 for t in RP1_ts_g], [float(count) for count in RP1_count_g], "b", label="TDS2 10.241.10.32")
+# plt.xlim([0, 50])
+plt.yticks(np.arange(-5, 8, 1.0))
+# plt.ylim([-10, 10])
+plt.title("TDS1 and TDS2")
 plt.xlabel("Time (minutes)")
 plt.ylabel("Number of people")
 plt.legend()
-plt.savefig("RP1_RP2_count.png")
+plt.savefig("TDS1_TDS2_count.png")
 
 
-# plt.figure()
-# plt.plot(RP2_ts_g, RP2_count_g)
-# plt.savefig("RP2_count.png")
 
-# files = sorted(os.listdir('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-15-2021-07:59:57/Camera 1/'))
-
-# jsonList = []
-# NUC_ts = []
-# NUC_count = []
-# for file in files:
-# 	if '.json' in file:
-# 		if not '._' in file:
-# 			jsonList.append(file)
-# camEnd = len(jsonList)
-# # print("file:", len(jsonList))
-# for j in range(0, camEnd):
-# 	dt2 = datetime.datetime.fromtimestamp(float(jsonList[j][0:len(jsonList[j])-5]))
-# 	diff = dateutil.relativedelta.relativedelta(dt2, dt1)
-# 	sec = diff.hours * 3600 + diff.minutes * 60 + diff.seconds
-# 	NUC_ts.append(sec)
-# 	# print("append", float(jsonList[j][0:len(jsonList[j])-5]))
-# 	with open('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-15-2021-07:59:57/Camera 1/' + jsonList[j]) as f:
-# 		temp = json.load(f)
-# 		NUC_count.append(temp[1][temp[1].find(':') + 1 : len(temp[1])])
-
-# plt.figure()
-# plt.plot([t/60 for t in NUC_ts], Camera_2, "b", label="Camera 2")
-# # plt.plot([t/60 for t in NUC_ts], Camera_3, "r", label="Camera 3")
-# # plt.plot([t/60 for t in fusion_ts], [float(count) for count in fusion_count], "r", label="Fusion")
-# plt.xlim([0, 30000/60])
-# plt.yticks(np.arange(-10, 10, 1.0))
-# # plt.title("Fusion and NUC")
-# plt.xlabel("Time (minutes)")
-# plt.ylabel("Number of people")
-# plt.legend()
-# plt.savefig("Camera2.png")
-
-# plt.figure()
-# plt.plot([t/60 for t in NUC_ts], Camera_3, "r", label="Camera 3")
-# plt.xlim([0, 30000/60])
-# plt.yticks(np.arange(-10, 10, 1.0))
-# # plt.title("Fusion and NUC")
-# plt.xlabel("Time (minutes)")
-# plt.ylabel("Number of people")
-# plt.legend()
-# plt.savefig("Camera3.png")
 
 
 

@@ -7,6 +7,7 @@ import time
 
 # Here are all the variables
 # RPLast = 0
+
 short_window = 7
 long_window = 25
 RP_ts = [] # store all the timestamps from the Raspberry Pis
@@ -16,10 +17,19 @@ maxFileNum = 0 # currently in all the RP directories, the max number of files in
 RPIndex = 0 # the index of last visited element in RP_ts and RP_count
 camIndex = 0 # the index of last processed element in cam_ts and cam_count
 start = 0 # the index of RP last time used as right
-RPfoldername = ["RP1", "RP2"]
+
+RPfoldername = []
+folders = os.listdir()
+for f in folders:
+	if '._' not in f:
+		if 'RP' in f and len(f) < 4:
+			RPfoldername.append(f)
+RPfoldername = sorted(RPfoldername)
+
+
 Camerafoldername = []#'/home/team19/Desktop/Axis_DL/Detection/YOLO/zongxin_test/Camera 1/'
 camLast = 0 # the idex of the file in the folders that was last used
-count = np.zeros(len(RPfoldername))
+
 cam_ts = [] # array that stores all the timestamp from camera
 cam_count = np.array([]) # array that stores all the count from camera
 
@@ -46,11 +56,11 @@ Camerafoldername.append("/home/team19/Desktop/Axis_DL/Detection/YOLO/" + folderd
 
 
 cam_intermediate_count = np.zeros(len(Camerafoldername)) # array stores count of individual cameras
-
+roomnum = 0
 
 # get input from commandline
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "hN:M", ["H="])
+	opts, args = getopt.getopt(sys.argv[1:], "hN:MR:", ["H="])
 except getopt.GetoptError:
 	print("Error: modified_filter.py -N <reportTime>")
 	sys.exit()
@@ -64,7 +74,21 @@ for opt, arg in opts:
 		reportTime = arg
 	elif opt == "-M":
 		Camerafoldername.append("/home/team19/Desktop/Axis_DL/Detection/YOLO/" + folderdict[datafolder[0]] +"/Camera 2/")
-print(Camerafoldername)
+	elif opt in ("-R", "roomnum"):
+		roomnum = int(arg)
+
+
+with open("./room_information.json") as f:
+	room = json.load(f)
+sensornum = len(room[0]["thermal"])
+if roomnum == 1:
+	RPfoldername = RPfoldername[:sensornum]
+else:
+	RPfoldername = RPfoldername[sensornum:]
+print(sensornum)
+print(RPfoldername)
+count = np.zeros(len(RPfoldername))
+
 # initialize the dictionaries
 for i in range(len(Camerafoldername)):
 	camdict.append({})
@@ -142,7 +166,7 @@ while 1:
 			if fileList[i][j] != 'placeHolder':
 				with open(RPfoldername[i - 1] + '/' + fileList[i][j], encoding='utf-8') as f:
 					temp = json.load(f)
-				os.system('ssh ' + room_information[0]["thermal"][i - 1]['thermal_ip'] + ' rm ./Buffer/' + fileList[i][j])
+				os.system('ssh ' + room_information[roomnum-1]["thermal"][i - 1]['thermal_ip'] + ' rm ./Buffer/' + fileList[i][j])
 				ts_temp.append(float(temp['timestamp']))
 				RPdict[i - 1][float(temp['timestamp'])] = int(temp['count'])
 				#print(float(temp['timestamp']), int(temp['count']))
@@ -157,7 +181,7 @@ while 1:
 				count[j] = RPdict[j][ts_temp[i]]
 		RP_count.append(sum(count))
 
-	#if now has passed the report time but no new file from thermal sensor
+	#fusion
 	if len(cam_ts) > 0:
 		if (len(RP_ts) > RPIndex):
 			window = cam_count[-short_window:]
@@ -183,41 +207,6 @@ while 1:
 			res_count = med
 			res_ts = cam_ts[-1]
 
-	# print((len(cam_ts) - camIndex) * 5)
-	# if ((len(cam_ts) - camIndex) * 5 >= int(reportTime) * 60):
-	# 	print(cam_ts[len(cam_ts)-1])
-	# 	report = True
-	# 	window = cam_count[camIndex:]
-	# 	med = np.median(window)
-	# 	cam_count[camIndex:] = med
-
-	# # filter
-	# for i in range(RPIndex, len(RP_ts)):
-	# 	report = True
-	# 	left = np.searchsorted(cam_ts[camIndex:], RP_ts[start], side='left')
-	# 	left = left + camIndex
-	# 	right = np.searchsorted(cam_ts[camIndex:], RP_ts[i], side='right')
-	# 	right = right + camIndex
-	# 	if (right - left) > (16):
-	# 		window = cam_count[left:right]
-	# 		med = np.median(window)
-	# 		cam_count[left:right] = med
-	# 		start = i
-	# 	else:
-	# 		newArray = np.array([])
-	# 		begin = left
-	# 		while (left) < right:
-	# 			a = max(left - 3, begin)
-	# 			b = min(left + 3, right)
-	# 			#print(left)
-	# 			window = cam_count[a:b + 1]
-	# 			med = np.median(window)
-	# 			newArray = np.append(newArray, med)
-	# 			left += 1
-	# 		cam_count[begin:right] = newArray
-	# 		start = i
-	# RPIndex = len(RP_ts)
-
 	# report
 		print("writing to result")
 		result = {}
@@ -230,9 +219,9 @@ while 1:
 
 
 
-# plt.plot(cam_ts, cam_count)
-# plt.title('filtered')
-# plt.show()
+plt.plot(cam_ts, cam_count)
+plt.title('filtered')
+plt.show()
 		
 
 
