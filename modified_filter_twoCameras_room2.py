@@ -163,7 +163,6 @@ while 1:
 	for i in range(1, np.shape(fileList)[0]):
 		for j in range(0, maxFileNum):
 			if fileList[i][j] != 'placeHolder':
-
 				with open(RPfoldername[i - 1] + '/' + fileList[i][j], encoding='utf-8') as f:
 					temp = json.load(f)
 				if fileList[i][j] not in RP_deleted:
@@ -214,7 +213,7 @@ while 1:
 		result = {}
 		result[str(res_ts)] = [str(res_count)]
 		# print(cam_count)
-		with open('result/' + str(res_ts) + '.json', 'w') as outfile:
+		with open('result2/' + str(res_ts) + '.json', 'w') as outfile:
 			json.dump(result, outfile)
 
 

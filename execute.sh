@@ -1,28 +1,31 @@
 #!/bin/bash
 
-NUC="python3 axis_cameras_single_cam_v2_copy.py"
+NUC="python3%/home/team19/Desktop/Axis_DL/Detection/YOLO/axis_cameras_single_cam_v2_copy.py"
+NUC2="python3%/home/team19/Desktop/Axis_DL/Detection/YOLO/axis_cameras_single_cam_v2_copy_room2.py"
 RP="python3_rpi-realtime-peoplecount/run.py"
 Fusion="python3 modified_filter_twoCameras.py"
+Fusion_2="python3 modified_filter_twoCameras_room2.py"
+
 now=$(date +"%m-%d-%Y-%T")
 room=""
-while getopts "N:MCSOA:B:ImsfR:" opt;
+
+while getopts "MCSOImsfR:" opt;
 do
     case "${opt}" in
-            N) Fusion="${Fusion} -N ${OPTARG}"
-                    ;;
             M) Fusion="${Fusion} -M"
+                Fusion_2="${Fusion_2} -M"
                     ;;
-            C) NUC="${NUC} -c"
+            C) NUC="${NUC}%-c"
+                NUC2="${NUC2}%-c"
                     ;;
-            S) NUC="${NUC} -s"
+            S) NUC="${NUC}%-s"
+                NUC2="${NUC2}%-s"
                     ;;
-            O) NUC="${NUC} -o ${now}/"
+            O) NUC="${NUC}%-o%/home/team19/Desktop/Axis_DL/Detection/YOLO/${now}/"
+                NUC2="${NUC2}%-o%/home/team19/Desktop/Axis_DL/Detection/YOLO/${now}/"
                     ;;
-            I) NUC="${NUC} -i"
-                    ;;
-            A) NUC="${NUC} -a http://viewer:OPC-ECE-viewer@${OPTARG}//axis-cgi/mjpg/video.cgi"
-                    ;;
-            B) NUC="${NUC} -b http://viewer:OPC-ECE-viewer@${OPTARG}//axis-cgi/mjpg/video.cgi"
+            I) NUC="${NUC}%-i"
+                NUC2="${NUC2}%-i"
                     ;;
             m) RP="${RP}_-m"
                     ;;
@@ -31,14 +34,20 @@ do
             f) RP="${RP}_-f_${now}/"
                     ;;
             R) Fusion="${Fusion} -R ${OPTARG}"
+                Fusion_2="${Fusion_2} -R ${OPTARG}"
                 room="${OPTARG}"
     esac
 done
-echo "${NUC}"
-echo "${RP}"
-echo "${Fusion}"
-cd result
-rm *.json
+
+if [[ ${room} == "1" ]]
+then
+    cd result
+    rm *.json
+else
+    cd result2
+    rm *.json
+fi
+# echo "${NUC2}"
 cd
 cd Desktop
 . /home/team19/Desktop/ENV/bin/activate
@@ -49,14 +58,28 @@ mkdir "Camera 1"
 mkdir "Camera 2"
 mkdir "Camera 3"
 cd ..
-eval "${NUC}" >running_stdout.txt&
 cd 
 cd Fusion
-echo "hellp"
+if [[ ${room} == "1" ]]
+then
+    echo "${NUC}"
+    eval "python3 executeCamera.py -p ${NUC} -R ${room}" &
+else
+    echo "${NUC2}"
+    eval "python3 executeCamera.py -p ${NUC2} -R ${room}" &
+fi
+# echo "${RP}"
 eval "python3 executeRP.py -p ${RP} -R ${room}"&
 # ssh pi@10.241.10.17 "${RP}"&
 # ssh pi@10.241.10.32 "${RP}"&
-echo "helo"
+# echo "helo"
 python3 RP_sync.py >autoSync.txt&
-echo "bello"
-eval "${Fusion} -R ${room}">filter.txt&
+# echo "bello"
+if [[ ${room} == "1" ]]
+then
+    echo "${Fusion}"
+    eval "${Fusion}">filter.txt&
+else
+    echo "${Fusion_2}"
+    eval "${Fusion_2}">filter.txt&
+fi
