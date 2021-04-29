@@ -7,35 +7,33 @@
 use ```bash execute [flgs] &```to start. Please remember to add "&". Example:
 
 ```bash
-bash execute.sh -N 5 -C -S -O ./ -I -m &
+bash execute.sh -C -S -O -M -I -m -s -f -R 1&
 ```
 Capital letters are flags for the cameras or Fusion (-N is the only flag for the fusion):
- - `-N [insert number here]` will specify the report time in minute (system will report if there is new thermal entry, if there is no thhermal entry for a long time, how long do you want it to report)
   - `-C` will set it to run analysis from images taken from the camera
   - `-S` will set it to save images
-  - `-O [insert folder name here]` will set it to save images to a particular folder. Default is `./PICS/detections`
+  - `-O` will set it to save images to a folder named after current time. 
   - `-I` will read images in from a folder should you need to anaylze them as such
+  - `-M` used when there are two cameras in one room
+  - `-m` is to enable saving thermal frame data in the json files.
+  - `-s` is to enable single-person/baseline algorithm instead of the multiperson algorithm. For the multiperson algorithm, omit flag. 
+  - `-R [room number]` it will tell the system to look at which room's information. To decide which room the COSSY is going to run
 
-Lower case letters are for the thermal sensors:
- -  -h, --help     show this help message and exit
- - -f save_path   Folder to save resulting JSON files. Must be a subdirectory of the current path. Saved to sensor_results by default
- - -n [duration]  Time to run the sensor in seconds (approximated using number of frames). For indefinite runtime, omit flag.
- - -m             Enable saving thermal frame data to JSON files.
- - -s             Enable Single-Person/Baseline algorithm.
 
 ## To End
 
 To stop the program press enter and use:
 
 ```bash
-sh end.sh
+bash end.sh -R 1
 ```
+- `-R [room number]` it will tell the system to end the system at which room
 
 ## Note
 - I redirected the output from the camera to a file ```running_stdout.txt``` located at the same place where the camera's people counting program is on so that the constant output from the camera does not obstruct further operation.
 - I also redirected the output from the Rsync to ```autoSync.txt``` located in the current directory.
 - JSON files from the thermal sensor is located in folders call RP#
-- Results are store in ```result.json```
+- Results are store in ```result.json``` or ```result2.json```
 
 ## 
 

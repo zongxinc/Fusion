@@ -20,4 +20,4 @@ for opt, arg in opts:
 
 for ip in info[roomnum - 1]['thermal']:
 	print("ssh " + ip['thermal_ip'] + " python3 end.py")
-	os.system("ssh " + ip['thermal_ip'] + " python3 end.py")
+	os.system("ssh " + ip['thermal_ip'] + " python3 end.py &")

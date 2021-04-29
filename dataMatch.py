@@ -15,7 +15,8 @@ for file in files:
 
 fusion_ts = []
 fusion_count = []
-dt1 = datetime.datetime.fromtimestamp(1619195309.272862)
+print(jsonList[0][:-5])
+dt1 = datetime.datetime.fromtimestamp(float(jsonList[0][0:len(jsonList[i])-5]))
 for i in range(len(jsonList)):
 	dt2 = datetime.datetime.fromtimestamp(float(jsonList[i][0:len(jsonList[i])-5]))
 	diff = dateutil.relativedelta.relativedelta(dt2, dt1)
