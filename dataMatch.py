@@ -16,7 +16,7 @@ for file in files:
 fusion_ts = []
 fusion_count = []
 print(jsonList[0][:-5])
-dt1 = datetime.datetime.fromtimestamp(float(jsonList[0][0:len(jsonList[i])-5]))
+dt1 = datetime.datetime.fromtimestamp(float(jsonList[0][0:len(jsonList[0])-5]))
 for i in range(len(jsonList)):
 	dt2 = datetime.datetime.fromtimestamp(float(jsonList[i][0:len(jsonList[i])-5]))
 	diff = dateutil.relativedelta.relativedelta(dt2, dt1)
@@ -38,7 +38,7 @@ for i in range(len(jsonList)):
 Camera_2 = []
 Camera_3 = []
 
-files = sorted(os.listdir('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-23-2021-12:28:27/Camera 1/'))
+files = sorted(os.listdir('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-29-2021-08:15:41/Camera 1/'))
 
 jsonList = []
 NUC_ts = []
@@ -56,7 +56,7 @@ for j in range(0, camEnd):
 	NUC_ts.append(sec)
 	# print("append", float(jsonList[j][0:len(jsonList[j])-5]))
 	total = 0
-	with open('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-23-2021-12:28:27/Camera 1/' + jsonList[j]) as f:
+	with open('/home/team19/Desktop/Axis_DL/Detection/YOLO/04-29-2021-08:15:41/Camera 1/' + jsonList[j]) as f:
 		temp = json.load(f)
 		total += float(temp['Num People'])
 		# Camera_2.append(float(temp[1][temp[1].find(':') + 1 : len(temp[1])]))
@@ -89,7 +89,7 @@ for i in range(len(RPfoldername)):
 				RP_ts.append(float(temp['timestamp']))
 				print(float(temp['timestamp']), int(temp['count']))
 				if i == 0:
-					RP_dict[i][float(temp['timestamp'])] = -int(temp['count'])
+					RP_dict[i][float(temp['timestamp'])] = int(temp['count'])
 				else:
 					RP_dict[i][float(temp['timestamp'])] = int(temp['count'])
 				if i == 0:
@@ -104,7 +104,8 @@ for i in range(len(RPfoldername)):
 					sec = diff.hours * 3600 + diff.minutes * 60 + diff.seconds
 					RP2_ts.append(sec)
 					RP2_count.append(int(temp['count']))
-
+print(RP1_count)
+print(RP2_count)
 RP_ts.sort()
 RP_count = []
 
@@ -113,6 +114,7 @@ for i in range(len(RP_ts)):
 		if RP_ts[i] in RP_dict[j]:
 			count[j] = RP_dict[j][RP_ts[i]]
 	RP_count.append(sum(count))
+print(RP_count)
 RP_ts_g = []
 RP_count_g = []
 RP_ts_g.append(0)
@@ -140,14 +142,14 @@ RP1_count_g.append(0)
 for i in range(len(RP1_ts)):
 	if i !=0:
 		RP1_ts_g.append(RP1_ts[i])
-		RP1_count_g.append(-RP1_count[i-1])
+		RP1_count_g.append(RP1_count[i-1])
 	else:
 		RP1_ts_g.append(RP1_ts[i])
 		RP1_count_g.append(0)
 	RP1_ts_g.append(RP1_ts[i])
-	RP1_count_g.append(-RP1_count[i])
+	RP1_count_g.append(RP1_count[i])
 RP1_ts_g.append(NUC_ts[-1])
-RP1_count_g.append(-RP1_count[-1])
+RP1_count_g.append(RP1_count[-1])
 
 RP2_ts_g = []
 RP2_count_g = []
@@ -165,7 +167,7 @@ for i in range(len(RP2_ts)):
 RP2_ts_g.append(NUC_ts[-1])
 RP2_count_g.append(RP2_count[-1])
 
-print(NUC_count)
+# print(NUC_count)
 # print(fusion_count)
 # plt.figure()
 # plt.plot(NUC_ts, NUC_count, "b", label="NUC")
@@ -196,48 +198,48 @@ fig,ax = plt.subplots()
 l1, = ax.plot([t/60 for t in fusion_ts], [float(count) for count in fusion_count], "r", label="Fusion")
 # plt.xlim([0, 50])
 # plt.ylim([-10, 10])
-ax.set_yticks(np.arange(-5, 8, 1.0), minor=False)
+ax.set_yticks(np.arange(-5, 10, 1), minor=False)
 ax.set_ylabel("Number of people(Fusion)", color="red")
 ax.set_xlabel("Time (minutes)")
 ax2 = ax.twinx()
-l2, = ax2.plot([t/60 for t in RP_ts_g], [float(count) for count in RP_count_g], 'g', label="TDS toal")
+l2, = ax2.plot([t/60 for t in RP_ts_g], [float(count - 0.1) for count in RP_count_g], 'g', label="TDS toal")
 # plt.xlim([0, 50])
 # plt.ylim([-10, 10])
 # print([float(count) for count in RP_count_g])
 plt.title("Fusion and TDS total")
 ax2.set_xlabel("Time (minutes)")
-ax2.set_yticks(np.arange(-2, 10, 1.0), minor=False)
+ax2.set_yticks(np.arange(-5, 10, 1.0), minor=False)
 ax2.set_ylabel("Number of people(TDS total)", color='green')
 # ax.legend()
 # ax2.legend()
-plt.legend([l1, l2], ["Fusion", "TDS toal"])
+plt.legend([l1, l2], ["Fusion", "TDS total"])
 plt.savefig("Fusion_TDS_count.png")
 
 plt.figure()
 fig,ax = plt.subplots()
-l1, = ax.plot([t/60 for t in NUC_ts], [float(count) for count in NUC_count], "b", label="OFC")
+l1, = ax.plot([t/60 for t in NUC_ts], [float(count) for count in NUC_count], "r", label="OFC")
 # plt.xlim([0, 50])
 # plt.ylim([-10, 10])
-ax.set_yticks(np.arange(-5, 8, 1.0), minor=False)
+ax.set_yticks(np.arange(-5, 10, 1), minor=False)
 ax.set_ylabel("Number of people(OFC)", color="blue")
 ax.set_xlabel("Time (minutes)")
 ax2 = ax.twinx()
-l2, = ax2.plot([t/60 for t in RP_ts_g], [float(count) for count in RP_count_g], 'g', label="TDS toal")
+l2, = ax2.plot([t/60 for t in RP_ts_g], [float(count - 0.1) for count in RP_count_g], 'g', label="TDS toal")
 # plt.xlim([0, 50])
 # plt.ylim([-10, 10])
 # print([float(count) for count in RP_count_g])
 plt.title("OFC and TDS total")
 ax2.set_xlabel("Time (minutes)")
-ax2.set_yticks(np.arange(-2, 10, 1.0), minor=False)
+ax2.set_yticks(np.arange(-5, 10, 1), minor=False)
 ax2.set_ylabel("Number of people(TDS total)", color='green')
 # ax.legend()
 # ax2.legend()
-plt.legend([l1, l2], ["OFC", "TDS toal"])
+plt.legend([l1, l2], ["OFC", "TDS total"])
 plt.savefig("OFC_TDS_count.png")
 
 plt.figure()
-plt.plot([t/60 for t in RP2_ts_g], [float(count) for count in RP2_count_g], "r", label="TDS1 10.241.10.33")
-plt.plot([t/60 for t in RP1_ts_g], [float(count) for count in RP1_count_g], "b", label="TDS2 10.241.10.32")
+plt.plot([t/60 for t in RP1_ts_g], [float(count) for count in RP1_count_g], "r", label="TDS1 10.241.10.33")
+plt.plot([t/60 for t in RP2_ts_g], [float(count) for count in RP2_count_g], "b", label="TDS2 10.241.10.32")
 # plt.xlim([0, 50])
 plt.yticks(np.arange(-5, 8, 1.0))
 # plt.ylim([-10, 10])

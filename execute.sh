@@ -73,7 +73,12 @@ eval "python3 executeRP.py -p ${RP} -R ${room}"&
 # ssh pi@10.241.10.17 "${RP}"&
 # ssh pi@10.241.10.32 "${RP}"&
 # echo "helo"
-python3 RP_sync.py >autoSync.txt&
+if [[ ${room} == "1" ]]
+then
+    python3 RP_sync.py >autoSync.txt&
+else
+    python3 RP_sync_room2.py >autoSync.txt&
+fi
 # echo "bello"
 if [[ ${room} == "1" ]]
 then
